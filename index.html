@@ -12,7 +12,7 @@
     --accent:#c7a27b;     /* dorado suave (confeti) */
     --env-base:#F6F5F2;   /* sobre claro */
     --env-flap:#E9F4EF;   /* solapa verde pastel MUY clara */
-    --env-border:#e4d2bd; /* borde sobre */
+    --env-border: var(--env-flap); /* borde del sobre = color de la solapa */
   }
   *{box-sizing:border-box}
   html,body{
@@ -26,9 +26,9 @@
     perspective:1600px;
   }
 
-  /* --- SOBRE (más pequeño) --- */
+  /* --- SOBRE (móvil-first, más pequeño) --- */
   .envelope{
-    --w: clamp(320px, 70vw, 740px);   /* reducido para dejar aire */
+    --w: clamp(300px, 92vw, 620px);   /* reducido y adaptable */
     --h: calc(var(--w) * 0.62);
     width:var(--w); height:var(--h);
     position:relative; transform-style:preserve-3d;
@@ -40,7 +40,7 @@
 
   .env-base{
     position:absolute; inset:0; z-index:1;
-    border:2px solid var(--env-border);
+    border:2px solid var(--env-border); /* mismo color que solapa */
     border-radius:0;
     background: var(--env-base);
   }
@@ -50,7 +50,7 @@
     filter:blur(8px);
   }
 
-  /* Solapa con FILO para diferenciarla (ahora verde pastel) */
+  /* Solapa con filo para diferenciarla del sobre */
   .env-flap{
     position:absolute; z-index:3; left:0; right:0; top:0;
     height:calc(var(--h)*0.58);
@@ -60,7 +60,6 @@
     transform:rotateX(0deg) translateZ(1px);
     backface-visibility:hidden;
     transition:transform .9s cubic-bezier(.22,1,.36,1);
-    /* filo marcado bajo la arista + leve realce */
     filter: drop-shadow(0 2px 0 rgba(0,0,0,.18)) drop-shadow(0 0 1px rgba(0,0,0,.12));
   }
   .envelope.open .env-flap{
@@ -95,12 +94,12 @@
     color:#fff; text-shadow:0 1px 0 rgba(0,0,0,.25), 0 0 4px rgba(255,255,255,.28);
   }
 
-  /* --- CARTA (más pequeña para dejar huecos alrededor) --- */
+  /* --- CARTA (más pequeña para dejar aire alrededor) --- */
   .letter{
     position:absolute; z-index:5; left:0; right:0; top:0; bottom:0;
     margin:14px;
     background:#fff;
-    border:1px solid var(--brand);
+    border:1px solid var(--brand); /* mismo color que nombres/botón */
     border-radius:12px;
     display:flex; flex-direction:column; overflow:hidden;
     opacity:0; transform:translateY(0); pointer-events:none;
@@ -115,8 +114,8 @@
     position:fixed; z-index:6;
     top:50%; left:50%;
     transform: translate(-50%, -50%) !important;
-    width:min(640px, 86vw);   /* más estrecha -> más aire alrededor */
-    height:min(78vh, 720px);  /* más baja -> deja márgenes verticales */
+    width:min(560px, 92vw);   /* más estrecha -> más aire alrededor */
+    height:min(82vh, 680px);  /* más baja -> deja márgenes verticales */
     border-radius:14px;
     box-shadow: 0 22px 52px rgba(0,0,0,.22);
   }
@@ -154,6 +153,20 @@
     pointer-events:none; transition: opacity .35s ease, transform .45s ease;
   }
   .shell-hidden{ cursor: default; }
+
+  /* Ajustes específicos para móvil */
+  @media (max-width: 480px){
+    .envelope{ --w: min(92vw, 380px); }
+    .seal{ width:56px; height:56px; }
+    .letter.float{
+      width:92vw;
+      height:86vh; /* más alto en móvil pero dejando aire */
+    }
+    .letter-body{ padding:18px; }
+    .names{ font-size:34px; }
+    .h1{ font-size:26px; }
+    .pill{ font-size:13px; padding:8px 12px; }
+  }
 
   canvas#confetti{position:fixed;inset:0;pointer-events:none;z-index:9999}
 </style>
