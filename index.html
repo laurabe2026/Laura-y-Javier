@@ -52,7 +52,7 @@
     filter:blur(8px);
   }
 
-  /* Solapa: abre hacia arriba (bisagra arriba), mismo color */
+  /* Solapa: abre hacia arriba (bisagra arriba), con FILO para separarla */
   .env-flap{
     position:absolute; z-index:3; left:0; right:0; top:0;
     height:calc(var(--h)*0.58);
@@ -62,8 +62,13 @@
     transform:rotateX(0deg) translateZ(1px);
     backface-visibility:hidden;
     transition:transform .9s cubic-bezier(.22,1,.36,1);
+    /* FILO/sombra bajo la solapa para que se diferencie del sobre */
+    filter: drop-shadow(0 2px 0 rgba(0,0,0,.16));
   }
-  .envelope.open .env-flap{ transform:rotateX(-180deg) translateZ(1px); }
+  .envelope.open .env-flap{
+    transform:rotateX(-180deg) translateZ(1px);
+    filter:none; /* al abrir, quitamos el filo */
+  }
 
   /* Sello en el pico = botón (monograma más fino) */
   .seal{
