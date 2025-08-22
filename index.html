@@ -8,90 +8,109 @@
 <style>
   :root{
     --bg:#faf8f5; --ink:#243039;
-    --brand:#2e7d6b;      /* verde */
-    --accent:#d39b5b;     /* dorado */
+    --brand:#2e7d6b;      /* verde botones/textos */
+    --accent:#c7a27b;     /* dorado suave */
     --env-base:#fff1e2;   /* crudo sobre */
-    --env-flap:#e3c9a6;   /* solapa crudo */
-    --env-border:#e5d4bf; /* borde sobre */
+    --env-flap:#e6cfb0;   /* solapa crudo más profundo */
+    --env-border:#e4d2bd; /* borde sobre */
   }
   *{box-sizing:border-box}
   html,body{height:100%;margin:0;background:var(--bg);color:var(--ink);font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial}
 
+  /* Escena a pantalla completa */
   .stage{
     min-height:100svh; display:flex; align-items:center; justify-content:center; padding:24px;
-    background: radial-gradient(1000px 320px at 50% 100%, rgba(46,125,107,.10), transparent 90%),
-               linear-gradient(180deg,#f5f1eb,#ffffff);
+    background:
+      radial-gradient(1000px 320px at 50% 100%, rgba(46,125,107,.10), transparent 90%),
+      linear-gradient(180deg,#f6f2ec,#ffffff);
     perspective:1600px;
   }
 
-  /* --- SOBRE (más pequeño y PUNTAS RECTAS) --- */
+  /* --- SOBRE (puntAS rectas, tamaño equilibrado) --- */
   .envelope{
-    --w: clamp(360px, 84vw, 860px);      /* más pequeño que antes */
+    --w: clamp(360px, 84vw, 860px);
     --h: calc(var(--w) * 0.62);
     width:var(--w); height:var(--h);
     position:relative; transform-style:preserve-3d;
-    filter: drop-shadow(0 12px 28px rgba(0,0,0,.18));
+    filter: drop-shadow(0 14px 32px rgba(0,0,0,.18));
     overflow:visible; cursor:pointer;
+    transition: transform .25s ease;
   }
+  .envelope:hover{ transform: translateY(-2px) } /* micro elevación elegante */
+
   .env-base{
     position:absolute; inset:0; z-index:1;
-    background:var(--env-base);
-    border:2px solid var(--env-border); border-radius:0;   /* recto */
-    background-image:
-      linear-gradient(135deg, transparent 90%, rgba(0,0,0,.04) 75%, transparent 90%),
-      linear-gradient(225deg, transparent 90%, rgba(0,0,0,.04) 75%, transparent 90%);
-    background-size:16px 16px; background-position: top left, top right;
+    border:2px solid var(--env-border);
+    border-radius:0; /* recto */
+    /* Textura de lino sutil */
+    background:
+      repeating-linear-gradient(0deg, rgba(0,0,0,.014) 0 1px, transparent 1px 3px),
+      repeating-linear-gradient(90deg, rgba(0,0,0,.012) 0 1px, transparent 1px 4px),
+      var(--env-base);
   }
-  .drop{ position:absolute; left:6%; right:6%; bottom:-10px; height:20px; z-index:1;
-    background:radial-gradient(60% 100% at 50% 0, rgba(0,0,0,.16), transparent 72%); filter:blur(8px); }
+  .drop{
+    position:absolute; left:6%; right:6%; bottom:-10px; height:20px; z-index:1;
+    background:radial-gradient(60% 100% at 50% 0, rgba(0,0,0,.16), transparent 72%);
+    filter:blur(8px);
+  }
 
-  /* SOLAPA: abre hacia ARRIBA con bisagra arriba; sin curvas en las puntas */
+  /* Solapa: abre hacia arriba (bisagra arriba) con leve degradado */
   .env-flap{
     position:absolute; z-index:3; left:0; right:0; top:0;
     height:calc(var(--h)*0.58);
-    background:var(--env-flap);
+    background: linear-gradient(#ecd8bb, var(--env-flap) 70%);
     clip-path:polygon(0 0,100% 0,50% 100%); /* triángulo */
     transform-origin:50% 0%;
     transform:rotateX(0deg) translateZ(1px);
     backface-visibility:hidden;
-    transition:transform .9s cubic-bezier(.22,1,.36,1);
+    transition:transform .9s cubic-bezier(.22,1,.36,1), filter .3s ease;
   }
-  .envelope.open .env-flap{ transform:rotateX(-180deg) translateZ(1px); }
+  .envelope.open .env-flap{ transform:rotateX(-180deg) translateZ(1px); filter:brightness(.98) }
 
-  /* SELLO redondo EN EL PICO (botón real) */
+  /* Sello redondo en el pico = botón (con monograma y relieve) */
   .seal{
     position:absolute; z-index:5;
     top:calc(var(--h)*0.58); left:50%;
-    transform:translate(-50%, -42%); /* coloca justo en el pico */
-    width:56px; height:56px; border-radius:50%;
+    transform:translate(-50%, -42%); /* justo en el pico */
+    width:64px; height:64px; border-radius:50%;
     background:
-      radial-gradient(60% 60% at 35% 35%, rgba(255,255,255,.6), transparent 80%),
+      radial-gradient(60% 60% at 35% 35%, rgba(255,255,255,.6), transparent 60%),
       radial-gradient(circle at 50% 50%, #d6b48a, #b89064 70%, #a67c52 100%);
-    box-shadow: inset 0 6px 10px rgba(0,0,0,.25), 0 2px 4px rgba(0,0,0,.15),
-                0 0 0 2px #ffffffa8;
-    transition: opacity .35s ease, transform .2s ease; 
-    cursor:pointer;
-    display:flex; align-items:center; justify-content:center;
+    box-shadow:
+      inset 0 7px 12px rgba(0,0,0,.28),
+      0 2px 4px rgba(0,0,0,.18),
+      0 0 0 2px #ffffffb0,
+      0 8px 18px rgba(166,124,82,.25);
+    transition: opacity .35s ease, transform .18s ease, box-shadow .18s ease;
+    cursor:pointer; display:flex; align-items:center; justify-content:center;
   }
-  .seal:active{ transform:translate(-50%,-42%) scale(.96) }
+  .seal:hover{ transform:translate(-50%,-42%) scale(1.04) }
+  .seal:active{ transform:translate(-50%,-42%) scale(.97) }
   .envelope.open .seal{ opacity:0; pointer-events:none; transform:translate(-50%,-60%) scale(.94) }
+  .seal::after{
+    content:"L&J";
+    font-family:"Playfair Display",serif; font-weight:700; font-size:18px; letter-spacing:.5px;
+    color:#fff; text-shadow:0 1px 0 #8f6a45, 0 0 6px rgba(255,255,255,.35);
+  }
 
-  /* --- CARTA (contenido completo) --- */
+  /* --- CARTA (todo el contenido) --- */
   .letter{
     position:absolute; z-index:5; left:0; right:0; top:0; bottom:0;
-    margin:14px;                       /* margen interior del sobre */
-    background:#fffdf8; border:1px solid #efdfc7; border-radius:12px;
+    margin:14px; /* margen interior del sobre */
+    background:
+      repeating-linear-gradient(0deg, rgba(0,0,0,.012) 0 1px, transparent 1px 3px),
+      #fffdf8;                                  /* textura lino sutil */
+    border:1px solid #eadbc5; border-radius:12px;
     display:flex; flex-direction:column; overflow:hidden;
     opacity:0; transform:translateY(0); pointer-events:none;
-    transition: transform .9s cubic-bezier(.22,1,.36,1) .05s, opacity .25s ease;
+    transition: transform .9s cubic-bezier(.22,1,.36,1) .05s, opacity .25s ease, box-shadow .25s ease;
   }
-  /* Sube suficiente para que no tape el sobre en desktop */
   .envelope.open .letter{
     transform: translateY(calc(-1 * var(--h) * 0.95));
-    box-shadow: 0 18px 40px rgba(0,0,0,.20);
+    box-shadow: 0 20px 44px rgba(0,0,0,.20);
     opacity:1; pointer-events:auto;
   }
-  /* Modo lectura: centrada perfecta y grande */
+  /* Modo lectura centrado y grande */
   .letter.float{
     position:fixed; z-index:6;
     top:50%; left:50%;
@@ -99,10 +118,11 @@
     width:min(980px, 94vw);
     height:min(90vh, 880px);
     border-radius:14px;
+    box-shadow: 0 22px 52px rgba(0,0,0,.22);
   }
 
-  .letter-head{ text-align:center; padding:18px 16px 12px; border-bottom:1px dashed #efdfc7}
-  .names{ font-family:"Playfair Display",serif; font-weight:600; font-size:34px; color:var(--brand)}
+  .letter-head{ text-align:center; padding:20px 16px 12px; border-bottom:1px dashed #eadbc5}
+  .names{ font-family:"Playfair Display",serif; font-weight:600; font-size:36px; color:var(--brand)}
   .note{font-size:13px;color:#66737c}
 
   .letter-body{ padding:18px; max-height:min(74vh, 760px); overflow:auto; }
@@ -117,16 +137,17 @@
   .two{grid-template-columns:1fr 1fr}
   @media (max-width:720px){ .two{grid-template-columns:1fr} }
 
-  .tile{border:1px solid #eee;border-radius:12px;padding:14px;background:#fffaf3}
+  .tile{border:1px solid #eee2d4;border-radius:12px;padding:14px;background:#fffaf5}
   .tile h3{margin:0 0 6px;font-family:"Playfair Display",serif;font-size:20px}
-  .countdown{font-variant-numeric:tabular-nums;font-size:22px;font-weight:700;color:var(--accent)}
 
-  .btn{appearance:none;border:0;border-radius:999px;padding:12px 18px;cursor:pointer;font-weight:600;font-size:15px}
+  .btn{appearance:none;border:0;border-radius:999px;padding:12px 18px;cursor:pointer;font-weight:600;font-size:15px;
+       transition:filter .18s ease, transform .08s ease}
   .btn-primary{background:var(--brand);color:#fff;box-shadow:0 6px 16px rgba(46,125,107,.35)}
+  .btn-primary:hover{ filter:brightness(1.05) }
   .btn:active{transform:translateY(1px)}
   a.pill{ text-decoration:none; color:inherit }
 
-  /* Ocultar el cascarón cuando esté abierto (queda solo la carta) */
+  /* Oculta el cascarón del sobre cuando se abre (queda solo la carta) */
   .shell-hidden .env-base,
   .shell-hidden .env-flap,
   .shell-hidden .drop{
@@ -137,7 +158,7 @@
   }
   .shell-hidden{ cursor: default; }
 
-  /* Confeti arriba del todo */
+  /* Confeti por encima de todo */
   canvas#confetti{position:fixed;inset:0;pointer-events:none;z-index:9999}
 </style>
 </head>
@@ -150,10 +171,10 @@
     <div class="drop"></div>
     <div class="env-flap"></div>
 
-    <!-- SELLO en el pico: botón real -->
+    <!-- Sello en el pico = botón -->
     <div class="seal" id="seal" aria-label="Abrir invitación" role="button" tabindex="0"></div>
 
-    <!-- CARTA con todo el contenido -->
+    <!-- Carta con todo el contenido (inicialmente oculta) -->
     <div class="letter" id="letter" aria-hidden="true">
       <div class="letter-head">
         <div class="names">Laura & Javier</div>
@@ -161,6 +182,7 @@
 
       <div class="letter-body">
         <h2 class="h1">SAVE THE DATE</h2>
+
         <div class="meta">
           <div class="pill">Sábado, 22 de agosto de 2026 · 13:00</div>
         </div>
@@ -170,8 +192,12 @@
         <div class="tile" style="margin-top:12px">
           <h3>Ubicaciones</h3>
           <div class="grid two">
-            <a class="pill" href="https://maps.google.com/?q=Ermita%20de%20Nuestra%20Se%C3%B1ora%20de%20La%20Lanzada" target="_blank" rel="noopener">📍 Ceremonia · Ermita de Nuestra Señora de La Lanzada</a>
-            <a class="pill" href="https://maps.google.com/?q=Lagar%20de%20Pintos" target="_blank" rel="noopener">📍 Celebración · Bodegas Lagar de Pintos</a>
+            <a class="pill" href="https://maps.google.com/?q=Ermita%20de%20Nuestra%20Se%C3%B1ora%20de%20La%20Lanzada" target="_blank" rel="noopener">
+              📍 Ceremonia · Ermita de Nuestra Señora de La Lanzada
+            </a>
+            <a class="pill" href="https://maps.google.com/?q=Lagar%20de%20Pintos" target="_blank" rel="noopener">
+              📍 Celebración · Bodegas Lagar de Pintos
+            </a>
           </div>
         </div>
 
@@ -184,7 +210,6 @@
 </div>
 
 <script>
-  const weddingDate = new Date(2026, 7, 22, 13, 0);
   const envelope = document.getElementById('envelope');
   const letter   = document.getElementById('letter');
   const seal     = document.getElementById('seal');
@@ -208,22 +233,7 @@
   envelope.addEventListener('click', openInvite);
   envelope.addEventListener('keypress', e=>{ if(e.key==='Enter'||e.key===' '){ openInvite(); }});
 
-  // Cuenta atrás
-  function tick(){
-    const now = new Date();
-    const diff = weddingDate - now;
-    const el = document.getElementById('countdown');
-    if(diff <= 0){ el.textContent = '¡Es hoy!'; return; }
-    const d = Math.floor(diff / (1000*60*60*24));
-    const h = Math.floor((diff / (1000*60*60)) % 24).toString().padStart(2,'0');
-    const m = Math.floor((diff / (1000*60)) % 60).toString().padStart(2,'0');
-    const s = Math.floor((diff / 1000) % 60).toString().padStart(2,'0');
-    el.textContent = `${d} días · ${h}:${m}:${s}`;
-    setTimeout(tick, 1000);
-  }
-  tick();
-
-  // Confeti
+  /* ===== Confeti “premium” ===== */
   const canvas = document.getElementById('confetti');
   const ctx = canvas.getContext('2d');
   let W,H,pieces=[],animating=false;
@@ -231,30 +241,44 @@
   window.addEventListener('resize', resize); resize();
 
   function burstConfetti(){
-    const colors = ['#2e7d6b','#d39b5b','#e8d8c7','#ffffff'];
+    const colors = ['#2e7d6b','#ba8a55','#c7a27b','#e8d8c7','#ffffff']; // paleta refinada
     pieces = [];
-    for(let i=0;i<140;i++){
+    for(let i=0;i<160;i++){
+      const type = Math.random(); // 0..1 para tipo de pieza
       pieces.push({
-        x: W/2, y: H/2, r: Math.random()*6+2,
+        x: W/2, y: H/2,
+        r: Math.random()*6+2,
+        w: Math.random()*8+4, h: Math.random()*3+2, // para rectángulos
+        rot: Math.random()*Math.PI,
         c: colors[Math.floor(Math.random()*colors.length)],
         vx: (Math.random()-0.5)*7,
         vy: (Math.random()-1.1)*8,
         g: 0.22+Math.random()*0.09,
-        a: 1
+        a: 1,
+        t: type < 0.5 ? 'circle' : 'rect'
       });
     }
     if(!animating){ animating = true; requestAnimationFrame(loop); }
-    setTimeout(()=>{ pieces = []; }, 2000);
+    setTimeout(()=>{ pieces = []; }, 2100);
   }
   function loop(){
     ctx.clearRect(0,0,W,H);
     for(const p of pieces){
-      p.vy += p.g; p.x += p.vx; p.y += p.vy; p.a -= 0.012;
+      p.vy += p.g; p.x += p.vx; p.y += p.vy; p.a -= 0.012; p.rot += 0.05;
       ctx.globalAlpha = Math.max(p.a,0);
-      ctx.beginPath(); ctx.arc(p.x,p.y,p.r,0,Math.PI*2); ctx.fillStyle=p.c; ctx.fill();
+      ctx.fillStyle = p.c;
+      if(p.t === 'rect'){
+        ctx.save();
+        ctx.translate(p.x, p.y);
+        ctx.rotate(p.rot);
+        ctx.fillRect(-p.w/2, -p.h/2, p.w, p.h);
+        ctx.restore();
+      }else{
+        ctx.beginPath(); ctx.arc(p.x,p.y,p.r,0,Math.PI*2); ctx.fill();
+      }
     }
     ctx.globalAlpha = 1;
-    pieces = pieces.filter(p=>p.a>0 && p.y<H+40);
+    pieces = pieces.filter(p=>p.a>0 && p.y<H+50);
     if(pieces.length){ requestAnimationFrame(loop); }
     else { animating=false; }
   }
