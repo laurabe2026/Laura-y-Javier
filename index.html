@@ -10,9 +10,9 @@
     --bg:#faf8f5; --ink:#243039;
     --brand:#2e7d6b;  /* verde */
     --accent:#d39b5b; /* dorado */
-    --env-base:#fff1e2;   /* crudo del sobre */
+    --env-base:#fff1e2;   /* crudo sobre */
     --env-flap:#e3c9a6;   /* solapa crudo */
-    --env-border:#e5d4bf; /* borde del sobre */
+    --env-border:#e5d4bf; /* borde sobre */
   }
   *{box-sizing:border-box}
   html,body{height:100%;margin:0;background:var(--bg);color:var(--ink);font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial}
@@ -21,6 +21,7 @@
     min-height:100svh; display:flex; align-items:center; justify-content:center; padding:24px;
     background: radial-gradient(1200px 360px at 50% 100%, rgba(46,125,107,.10), transparent 62%),
                linear-gradient(180deg,#f5f1eb,#ffffff);
+    perspective:1600px; /* perspectiva también en el contenedor para desktop */
   }
 
   /* --- SOBRE --- */
@@ -28,7 +29,7 @@
     --w: clamp(420px, 86vw, 980px);
     --h: calc(var(--w) * 0.62);
     width:var(--w); height:var(--h);
-    position:relative; cursor:pointer; transform-style:preserve-3d; perspective:1200px;
+    position:relative; cursor:pointer; transform-style:preserve-3d;
     filter: drop-shadow(0 16px 36px rgba(0,0,0,.20));
     overflow:visible;
   }
@@ -44,51 +45,51 @@
   .drop{ position:absolute; left:6%; right:6%; bottom:-12px; height:22px; z-index:1;
     background:radial-gradient(60% 100% at 50% 0, rgba(0,0,0,.18), transparent 72%); filter:blur(8px); }
 
+  /* SOLAPA: triángulo con clip-path + bisagra ARRIBA (50% 0%) */
   .env-flap{
-    position:absolute; z-index:2; left:0; right:0; top:-1px; height:0;
-    border-left: calc(var(--w)/2) solid transparent;
-    border-right: calc(var(--w)/2) solid transparent;
-    border-bottom: calc(var(--h)*0.58) solid var(--env-flap);
-    transform-origin:50% 100%;
-    transform: rotateX(0deg);
-    transition: transform .9s cubic-bezier(.22,1,.36,1);
-    border-radius:14px 14px 0 0;
+    position:absolute; z-index:3; left:0; right:0; top:0;
+    height:calc(var(--h)*0.58);
+    background:var(--env-flap);
+    clip-path:polygon(0 0,100% 0,50% 100%); /* triángulo apuntando hacia abajo */
+    transform-origin:50% 0%;                 /* bisagra en el borde superior */
+    transform:rotateX(0deg) translateZ(1px);
+    backface-visibility:hidden;
+    transition:transform .9s cubic-bezier(.22,1,.36,1);
+    border-top-left-radius:14px; border-top-right-radius:14px;
   }
-  .envelope.open .env-flap{ transform: rotateX(-180deg); }
+  .envelope.open .env-flap{ transform:rotateX(-180deg) translateZ(1px); }
 
   .seal{
-    position:absolute; z-index:3; top:calc(var(--h)*0.18); left:50%; transform:translateX(-50%);
+    position:absolute; z-index:4; top:calc(var(--h)*0.18); left:50%; transform:translateX(-50%);
     width:56px; height:56px; border-radius:50%;
     background:
       radial-gradient(60% 60% at 35% 35%, rgba(255,255,255,.6), transparent 60%),
       radial-gradient(circle at 50% 50%, #d6b48a, #b89064 70%, #a67c52 100%);
     box-shadow: inset 0 6px 10px rgba(0,0,0,.25), 0 2px 4px rgba(0,0,0,.15);
-    transition: opacity .35s ease, transform .35s ease;
-    pointer-events:none;
+    transition: opacity .35s ease, transform .35s ease; pointer-events:none;
   }
   .envelope.open .seal{ opacity:0; transform:translateX(-50%) scale(.9) }
 
-  /* --- CARTA (TODO el contenido) --- */
+  /* --- CARTA (contenido completo) --- */
   .letter{
-    position:absolute; z-index:4; left:14px; right:14px; top:14px; bottom:14px;
+    position:absolute; z-index:5; left:14px; right:14px; top:14px; bottom:14px;
     background:#fffdf8; border:1px solid #efdfc7; border-radius:14px;
     display:flex; flex-direction:column; overflow:hidden;
-    opacity:0; transform:translateY(0);
+    opacity:0; transform:translateY(0); pointer-events:none;
     transition: transform .9s cubic-bezier(.22,1,.36,1) .05s, opacity .25s ease;
-    pointer-events:none;
   }
-  /* Empuja la carta hacia arriba bastante para que NO la tape el sobre */
+  /* Sube suficiente para que no tape el sobre en desktop */
   .envelope.open .letter{
-    transform: translateY(calc(-1 * var(--h) * 0.82));
+    transform: translateY(calc(-1 * var(--h) * 0.90));
     box-shadow: 0 20px 44px rgba(0,0,0,.20);
     opacity:1; pointer-events:auto;
   }
-  /* Tras la animación, la carta queda flotando centrada (modo lectura) */
+  /* Modo lectura flotante tras la animación */
   .letter.float{
     position:fixed; left:50%; transform:translateX(-50%);
     top:clamp(24px,6vh,60px); bottom:clamp(24px,6vh,60px);
     width:min(980px, 92vw);
-    max-height:none; border-radius:16px; z-index:5;
+    border-radius:16px; z-index:6;
   }
 
   .letter-head{ text-align:center; padding:20px 16px 12px; border-bottom:1px dashed #efdfc7}
@@ -115,11 +116,8 @@
   .btn-primary{background:var(--brand);color:#fff;box-shadow:0 6px 16px rgba(46,125,107,.35)}
   .btn-ghost{background:transparent;color:var(--brand);border:1px solid #cfe0d6}
   .btn:active{transform:translateY(1px)}
-
-  /* Enlaces dentro de "pill" sin azul subrayado */
   a.pill{ text-decoration:none; color:inherit }
 
-  /* Confeti arriba del todo */
   canvas#confetti{position:fixed;inset:0;pointer-events:none;z-index:9999}
 </style>
 </head>
@@ -183,7 +181,6 @@
 
 <script>
   const weddingDate = new Date(2026, 7, 22, 13, 0);
-
   const envelope = document.getElementById('envelope');
   const letter   = document.getElementById('letter');
 
@@ -192,9 +189,7 @@
     envelope.classList.add('open');
     letter.removeAttribute('aria-hidden');
     burstConfetti();
-
-    // Cuando acabe la animación (~900 ms), deja la carta en modo "flotante" centrado
-    setTimeout(()=>{ letter.classList.add('float'); }, 950);
+    setTimeout(()=>{ letter.classList.add('float'); }, 950); // modo lectura tras la animación
   }
   envelope.addEventListener('click', openInvite);
   envelope.addEventListener('keypress', e=>{ if(e.key==='Enter'||e.key===' '){ openInvite(); }});
