@@ -8,7 +8,7 @@
 <style>
   :root{
     --bg:#faf8f5; --ink:#243039;
-    --brand:#2e7d6b;      /* verde nombres/botón/borde carta */
+    --brand:#2e7d6b;      /* verde nombres/borde carta/sello */
     --accent:#c7a27b;     /* dorado confeti */
     --env-base:#F6F5F2;   /* sobre claro */
     --env-flap:#E9F4EF;   /* solapa verde pastel muy clara */
@@ -67,7 +67,7 @@
     filter:none;
   }
 
-  /* Sello/botón = mismo color que los nombres */
+  /* Sello = botón (mismo color que los nombres) */
   .seal{
     position:absolute; z-index:5;
     top:calc(var(--h)*0.58); left:50%;
@@ -99,7 +99,7 @@
     position:absolute; z-index:5; left:0; right:0; top:0; bottom:0;
     margin:14px;
     background:#fff;
-    border:1px solid var(--brand); /* verde (no beige/naranja) */
+    border:1px solid var(--brand); /* verde (no beige) */
     border-radius:0;               /* recto */
     display:flex; flex-direction:column; overflow:hidden;
     opacity:0; transform:translateY(0); pointer-events:none;
@@ -121,16 +121,26 @@
   }
 
   /* Tipografías y centrado */
-  .letter-head{ text-align:center; padding:24px 16px 14px; border-bottom:1px dashed var(--env-flap) } /* sin beige */
+  .letter-head{ text-align:center; padding:24px 16px 14px; border-bottom:1px dashed var(--env-flap) }
   .names{ font-family:'Cormorant Garamond',serif; font-weight:500; font-size:40px; letter-spacing:.5px; color:var(--brand) }
   .letter-body{ padding:22px 18px; max-height:min(74vh, 640px); overflow:auto; text-align:center; }
   .letter.float .letter-body{ max-height: calc(100% - 150px); }
   .h1{ font-family:'Cormorant Garamond',serif; font-weight:500; font-size:30px; margin:0 0 10px; text-align:center; letter-spacing:.3px; }
 
-  .meta{ display:flex; flex-wrap:wrap; gap:8px; color:#51606b; margin:8px 0 14px; justify-content:center }
+  .meta{ display:flex; flex-wrap:wrap; gap:8px; color:#51606b; margin:8px 0 8px; justify-content:center }
   .pill{ padding:10px 14px; background:transparent; border:0; border-radius:999px; font-size:14px; display:inline-flex; align-items:center; justify-content:center; text-align:center }
 
-  /* Divisor sin tonos beige: usa el verde pastel del sobre */
+  /* Cuenta atrás */
+  .countdown{
+    font-variant-numeric: tabular-nums;
+    font-weight:700;
+    font-size:20px;
+    color:var(--brand);
+    letter-spacing:.5px;
+    margin:6px 0 12px;
+  }
+
+  /* Divisor en verde pastel (no beige) */
   .divider{ height:1px; background:linear-gradient(90deg,transparent,var(--env-flap),transparent); margin:14px 0 }
 
   .grid{ display:grid; gap:12px; justify-items:center }
@@ -140,10 +150,6 @@
   .tile{ border:0; border-radius:0; padding:12px 0; background:transparent; text-align:center }
   .tile h3{ margin:0 0 6px; font-family:'Cormorant Garamond',serif; font-size:22px; font-weight:500 }
 
-  .btn{ appearance:none; border:0; border-radius:999px; padding:12px 18px; cursor:pointer; font-weight:600; font-size:15px; transition:filter .18s ease, transform .08s ease }
-  .btn-primary{ background:var(--brand); color:#fff; box-shadow:0 6px 16px rgba(46,125,107,.35) }
-  .btn-primary:hover{ filter:brightness(1.05) }
-  .btn:active{ transform:translateY(1px) }
   a.pill{ text-decoration:none; color:inherit }
 
   /* Ocultar cascarón al abrir */
@@ -167,6 +173,7 @@
     .names{ font-size:34px; }
     .h1{ font-size:26px; }
     .pill{ font-size:13px; padding:8px 12px; }
+    .countdown{ font-size:18px; }
   }
 
   canvas#confetti{position:fixed;inset:0;pointer-events:none;z-index:9999}
@@ -197,6 +204,9 @@
           <div class="pill">Sábado, 22 de agosto de 2026 · 13:00</div>
         </div>
 
+        <!-- CUENTA ATRÁS -->
+        <div id="countdown" class="countdown">—:—:—</div>
+
         <div class="divider"></div>
 
         <div class="tile" style="margin-top:12px">
@@ -207,9 +217,7 @@
           </div>
         </div>
 
-        <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:16px">
-          <a class="btn btn-primary" href="https://forms.gle/tu-formulario" target="_blank" rel="noopener">Confirmar asistencia</a>
-        </div>
+        <!-- (Se ha quitado el botón de Confirmar asistencia) -->
       </div>
     </div>
   </div>
@@ -239,7 +247,24 @@
   envelope.addEventListener('click', openInvite);
   envelope.addEventListener('keypress', e=>{ if(e.key==='Enter'||e.key===' '){ openInvite(); }});
 
-  /* Confeti premium */
+  /* ====== Cuenta atrás ====== */
+  const weddingDate = new Date(2026, 7, 22, 13, 0, 0); // 22 agosto 2026 13:00
+  function tick(){
+    const el = document.getElementById('countdown');
+    if(!el) return;
+    const now = new Date();
+    let diff = weddingDate - now;
+    if(diff <= 0){ el.textContent = '¡Es hoy!'; return; }
+    const d = Math.floor(diff / (1000*60*60*24));
+    const h = Math.floor((diff / (1000*60*60)) % 24).toString().padStart(2,'0');
+    const m = Math.floor((diff / (1000*60)) % 60).toString().padStart(2,'0');
+    const s = Math.floor((diff / 1000) % 60).toString().padStart(2,'0');
+    el.textContent = `${d} días · ${h}:${m}:${s}`;
+    setTimeout(tick, 1000);
+  }
+  tick();
+
+  /* ===== Confeti premium ===== */
   const canvas = document.getElementById('confetti');
   const ctx = canvas.getContext('2d');
   let W,H,pieces=[],animating=false;
@@ -289,3 +314,4 @@
 </script>
 </body>
 </html>
+
