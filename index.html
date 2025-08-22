@@ -11,7 +11,7 @@
     --brand:#2e7d6b;      /* verde botones/textos */
     --accent:#c7a27b;     /* dorado suave */
     --env-base:##F6F5F2;   /* crudo sobre */
-    --env-flap:##F6F5F2;   /* solapa crudo más profundo */
+    --env-flap:##F6F9F1;   /* solapa crudo más profundo */
     --env-border:#e4d2bd; /* borde sobre */
   }
   *{box-sizing:border-box}
@@ -89,8 +89,8 @@
   .envelope.open .seal{ opacity:0; pointer-events:none; transform:translate(-50%,-60%) scale(.94) }
   .seal::after{
     content:"L&J";
-    font-family:"Playfair Display",serif; font-weight:700; font-size:18px; letter-spacing:.5px;
-    color:#fff; text-shadow:0 1px 0 #8f6a45, 0 0 6px rgba(255,255,255,.35);
+    font-family:"Playfair Display",serif; font-weight:500; font-size:8px; letter-spacing:.8px;
+    color:#fff; text-shadow:0 1px 0 #BEDBB9, 0 0 6px rgba(255,255,255,.35);
   }
 
   /* --- CARTA (todo el contenido) --- */
@@ -117,7 +117,7 @@
     transform: translate(-50%, -50%) !important;
     width:min(980px, 94vw);
     height:min(90vh, 880px);
-    border-radius:14px;
+    border-radius:0px;
     box-shadow: 0 22px 52px rgba(0,0,0,.22);
   }
 
@@ -128,7 +128,7 @@
   .letter-body{ padding:18px; max-height:min(74vh, 760px); overflow:auto; }
   .letter.float .letter-body{ max-height: calc(100% - 130px); }
 
-  .h1{font-family:"Playfair Display",serif;font-size:26px;margin:0 0 8px}
+  .h1{font-family:"Playfair Display",serif;font-size:26px;margin:0 0 8px;text-align:center}
   .meta{display:flex;flex-wrap:wrap;gap:8px;color:#51606b;margin:8px 0 12px}
   .pill{padding:8px 12px;background:#f4f6f5;border-radius:999px;border:1px solid #e9eeea;font-size:14px}
   .divider{height:1px;background:linear-gradient(90deg,transparent,#e9e3da,transparent);margin:12px 0}
