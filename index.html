@@ -9,10 +9,10 @@
   :root{
     --bg:#faf8f5; --ink:#243039;
     --brand:#2e7d6b;      /* verde nombres/botón/borde carta */
-    --accent:#c7a27b;     /* dorado suave (confeti) */
+    --accent:#c7a27b;     /* dorado confeti */
     --env-base:#F6F5F2;   /* sobre claro */
-    --env-flap:#E9F4EF;   /* solapa verde pastel MUY clara */
-    --env-border: var(--env-flap); /* borde del sobre = color de la solapa */
+    --env-flap:#E9F4EF;   /* solapa verde pastel muy clara */
+    --env-border: var(--env-flap); /* borde del sobre = solapa */
   }
   *{box-sizing:border-box}
   html,body{
@@ -26,9 +26,9 @@
     perspective:1600px;
   }
 
-  /* --- SOBRE (móvil-first, más pequeño) --- */
+  /* --- SOBRE (móvil-first, compacto) --- */
   .envelope{
-    --w: clamp(300px, 92vw, 620px);   /* reducido y adaptable */
+    --w: clamp(300px, 92vw, 620px);
     --h: calc(var(--w) * 0.62);
     width:var(--w); height:var(--h);
     position:relative; transform-style:preserve-3d;
@@ -67,7 +67,7 @@
     filter:none;
   }
 
-  /* Sello = botón (mismo color que los nombres) */
+  /* Sello/botón = mismo color que los nombres */
   .seal{
     position:absolute; z-index:5;
     top:calc(var(--h)*0.58); left:50%;
@@ -94,13 +94,13 @@
     color:#fff; text-shadow:0 1px 0 rgba(0,0,0,.25), 0 0 4px rgba(255,255,255,.28);
   }
 
-  /* --- CARTA (más pequeña para dejar aire alrededor) --- */
+  /* --- CARTA (borde recto y color verde brand) --- */
   .letter{
     position:absolute; z-index:5; left:0; right:0; top:0; bottom:0;
     margin:14px;
     background:#fff;
-    border:1px solid var(--brand); /* mismo color que nombres/botón */
-    border-radius:12px;
+    border:1px solid var(--brand); /* verde (no beige/naranja) */
+    border-radius:0;               /* recto */
     display:flex; flex-direction:column; overflow:hidden;
     opacity:0; transform:translateY(0); pointer-events:none;
     transition: transform .9s cubic-bezier(.22,1,.36,1) .05s, opacity .25s ease, box-shadow .25s ease;
@@ -114,14 +114,14 @@
     position:fixed; z-index:6;
     top:50%; left:50%;
     transform: translate(-50%, -50%) !important;
-    width:min(560px, 92vw);   /* más estrecha -> más aire alrededor */
-    height:min(82vh, 680px);  /* más baja -> deja márgenes verticales */
-    border-radius:14px;
+    width:min(560px, 92vw);
+    height:min(82vh, 680px);
+    border-radius:0; /* recto también en modo lectura */
     box-shadow: 0 22px 52px rgba(0,0,0,.22);
   }
 
   /* Tipografías y centrado */
-  .letter-head{ text-align:center; padding:24px 16px 14px; border-bottom:1px dashed #e7e0d6}
+  .letter-head{ text-align:center; padding:24px 16px 14px; border-bottom:1px dashed var(--env-flap) } /* sin beige */
   .names{ font-family:'Cormorant Garamond',serif; font-weight:500; font-size:40px; letter-spacing:.5px; color:var(--brand) }
   .letter-body{ padding:22px 18px; max-height:min(74vh, 640px); overflow:auto; text-align:center; }
   .letter.float .letter-body{ max-height: calc(100% - 150px); }
@@ -130,7 +130,8 @@
   .meta{ display:flex; flex-wrap:wrap; gap:8px; color:#51606b; margin:8px 0 14px; justify-content:center }
   .pill{ padding:10px 14px; background:transparent; border:0; border-radius:999px; font-size:14px; display:inline-flex; align-items:center; justify-content:center; text-align:center }
 
-  .divider{ height:1px; background:linear-gradient(90deg,transparent,#e9e3da,transparent); margin:14px 0 }
+  /* Divisor sin tonos beige: usa el verde pastel del sobre */
+  .divider{ height:1px; background:linear-gradient(90deg,transparent,var(--env-flap),transparent); margin:14px 0 }
 
   .grid{ display:grid; gap:12px; justify-items:center }
   .two{ grid-template-columns:1fr 1fr }
@@ -154,13 +155,13 @@
   }
   .shell-hidden{ cursor: default; }
 
-  /* Ajustes específicos para móvil */
+  /* Móvil */
   @media (max-width: 480px){
     .envelope{ --w: min(92vw, 380px); }
     .seal{ width:56px; height:56px; }
     .letter.float{
       width:92vw;
-      height:86vh; /* más alto en móvil pero dejando aire */
+      height:86vh;
     }
     .letter-body{ padding:18px; }
     .names{ font-size:34px; }
@@ -225,7 +226,7 @@
     letter.removeAttribute('aria-hidden');
     burstConfetti();
     setTimeout(()=>{
-      letter.classList.add('float');          // centra y agranda (con aire)
+      letter.classList.add('float');          // centrada y con aire
       envelope.classList.add('shell-hidden'); // oculta el sobre
     }, 950);
   }
@@ -234,7 +235,7 @@
   seal.addEventListener('click', (e)=>{ e.stopPropagation(); openInvite(); });
   seal.addEventListener('keypress', (e)=>{ if(e.key==='Enter'||e.key===' '){ e.stopPropagation(); openInvite(); }});
 
-  // También permitir click general por accesibilidad
+  // Accesibilidad: click en el sobre
   envelope.addEventListener('click', openInvite);
   envelope.addEventListener('keypress', e=>{ if(e.key==='Enter'||e.key===' '){ openInvite(); }});
 
