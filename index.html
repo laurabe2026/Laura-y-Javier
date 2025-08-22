@@ -116,7 +116,7 @@
     top:50%; left:50%; right:auto; bottom:auto; /* resetea para centrar siempre */
     transform: translate(-50%, -50%) !important;
     width:min(560px, 92vw);
-    height:min(82vh, 680px);
+    height:min(82vh, 680px); /* escritorio/tablet: tarjeta amplia */
     border-radius:0;
     box-shadow: 0 22px 52px rgba(0,0,0,.22);
     margin:0; /* evita herencias que desplacen */
@@ -163,17 +163,27 @@
   }
   .shell-hidden{ cursor: default; }
 
-  /* Móvil */
+  /* ====== Móvil: la carta es una TARJETA (no pantalla completa) ====== */
   @media (max-width: 480px){
     .envelope{ --w: min(92vw, 380px); }
     .seal{ width:56px; height:56px; }
+
+    /* La carta se adapta al contenido y deja aire alrededor */
     .letter.float{
-      left:50%; right:auto; bottom:auto; /* asegura centrado absoluto */
+      left:50%; right:auto; bottom:auto;
       width:92vw;
-      height:86vh;
+      height:auto;           /* <--- altura automática */
+      max-height:86vh;       /* no excede la pantalla */
+      transform: translate(-50%, -50%) !important;
       margin:0;
     }
-    .letter-body{ padding:18px; }
+    /* El cuerpo scrollea solo si hace falta, calculando un tope cómodo */
+    .letter.float .letter-body{
+      max-height: calc(86vh - 120px); /* 120px ≈ cabecera + márgenes */
+      overflow:auto;
+      padding:18px;
+    }
+
     .names{ font-size:34px; }
     .h1{ font-size:26px; }
     .pill{ font-size:13px; padding:8px 12px; }
@@ -213,7 +223,7 @@
 
         <div class="divider"></div>
 
-        <!-- MÁS ESPACIO ENTRE CUENTA ATRÁS Y UBICACIONES -->
+        <!-- más espacio entre cuenta atrás y ubicaciones -->
         <div class="tile" style="margin-top:24px">
           <h3>Ubicaciones</h3>
           <div class="grid two">
@@ -237,7 +247,7 @@
     letter.removeAttribute('aria-hidden');
     burstConfetti();
     setTimeout(()=>{
-      letter.classList.add('float');          // centrada y con aire
+      letter.classList.add('float');          // centrada (tarjeta)
       envelope.classList.add('shell-hidden'); // oculta el sobre
     }, 950);
   }
