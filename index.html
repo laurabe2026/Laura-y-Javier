@@ -21,12 +21,12 @@
     min-height:100svh; display:flex; align-items:center; justify-content:center; padding:24px;
     background: radial-gradient(1200px 360px at 50% 100%, rgba(46,125,107,.10), transparent 62%),
                linear-gradient(180deg,#f5f1eb,#ffffff);
-    perspective:1600px; /* perspectiva también en el contenedor para desktop */
+    perspective:1600px;
   }
 
   /* --- SOBRE --- */
   .envelope{
-    --w: clamp(420px, 86vw, 980px);
+    --w: clamp(520px, 92vw, 1100px);     /* MÁS GRANDE EN DESKTOP */
     --h: calc(var(--w) * 0.62);
     width:var(--w); height:var(--h);
     position:relative; cursor:pointer; transform-style:preserve-3d;
@@ -45,13 +45,13 @@
   .drop{ position:absolute; left:6%; right:6%; bottom:-12px; height:22px; z-index:1;
     background:radial-gradient(60% 100% at 50% 0, rgba(0,0,0,.18), transparent 72%); filter:blur(8px); }
 
-  /* SOLAPA: triángulo con clip-path + bisagra ARRIBA (50% 0%) */
+  /* SOLAPA: abre hacia ARRIBA (bisagra arriba) */
   .env-flap{
     position:absolute; z-index:3; left:0; right:0; top:0;
     height:calc(var(--h)*0.58);
     background:var(--env-flap);
-    clip-path:polygon(0 0,100% 0,50% 100%); /* triángulo apuntando hacia abajo */
-    transform-origin:50% 0%;                 /* bisagra en el borde superior */
+    clip-path:polygon(0 0,100% 0,50% 100%); /* triángulo */
+    transform-origin:50% 0%;
     transform:rotateX(0deg) translateZ(1px);
     backface-visibility:hidden;
     transition:transform .9s cubic-bezier(.22,1,.36,1);
@@ -78,26 +78,27 @@
     opacity:0; transform:translateY(0); pointer-events:none;
     transition: transform .9s cubic-bezier(.22,1,.36,1) .05s, opacity .25s ease;
   }
-  /* Sube suficiente para que no tape el sobre en desktop */
+  /* Sube más para que no la tape el sobre en desktop */
   .envelope.open .letter{
-    transform: translateY(calc(-1 * var(--h) * 0.90));
+    transform: translateY(calc(-1 * var(--h) * 0.95));
     box-shadow: 0 20px 44px rgba(0,0,0,.20);
     opacity:1; pointer-events:auto;
   }
-  /* Modo lectura flotante tras la animación */
+  /* Modo lectura: CENTRADA PERFECTA y GRANDE */
   .letter.float{
-    position:fixed; left:50%; transform:translateX(-50%);
-    top:clamp(24px,6vh,60px); bottom:clamp(24px,6vh,60px);
-    width:min(980px, 92vw);
-    border-radius:16px; z-index:6;
+    position:fixed; z-index:6;
+    top:50%; left:50%;
+    transform: translate(-50%, -50%) !important;  /* centra y anula cualquier translate previo */
+    width:min(1100px, 96vw);
+    height:min(90vh, 900px);
+    border-radius:16px;
   }
-
   .letter-head{ text-align:center; padding:20px 16px 12px; border-bottom:1px dashed #efdfc7}
-  .names{ font-family:"Playfair Display",serif; font-weight:600; font-size:34px; color:var(--brand)}
+  .names{ font-family:"Playfair Display",serif; font-weight:600; font-size:36px; color:var(--brand)}
   .note{font-size:13px;color:#66737c}
 
   .letter-body{ padding:18px; max-height:min(74vh, 780px); overflow:auto; }
-  .letter.float .letter-body{ max-height: calc(100vh - 180px); }
+  .letter.float .letter-body{ max-height: calc(100% - 130px); } /* cabe todo dentro */
 
   .h1{font-family:"Playfair Display",serif;font-size:26px;margin:0 0 8px}
   .meta{display:flex;flex-wrap:wrap;gap:8px;color:#51606b;margin:8px 0 12px}
@@ -189,7 +190,7 @@
     envelope.classList.add('open');
     letter.removeAttribute('aria-hidden');
     burstConfetti();
-    setTimeout(()=>{ letter.classList.add('float'); }, 950); // modo lectura tras la animación
+    setTimeout(()=>{ letter.classList.add('float'); }, 950); // centra y agranda tras la animación
   }
   envelope.addEventListener('click', openInvite);
   envelope.addEventListener('keypress', e=>{ if(e.key==='Enter'||e.key===' '){ openInvite(); }});
