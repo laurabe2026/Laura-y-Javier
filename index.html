@@ -10,7 +10,7 @@
   :root{
     --bg:#faf8f5; --ink:#243039;
     --brand:#2e7d6b;      /* verde nombres/botón/borde carta */
-    --accent:#c7a27b;     /* dorado suave */
+    --accent:#c7a27b;     /* dorado suave (confeti) */
     --env-base:#F6F5F2;   /* sobre claro */
     --env-flap:#F6F5F2;   /* solapa mismo color */
     --env-border:#e4d2bd; /* borde sobre */
@@ -52,7 +52,7 @@
     filter:blur(8px);
   }
 
-  /* Solapa con FILO para separarla visualmente del sobre */
+  /* Solapa con FILO marcado para diferenciarla del sobre */
   .env-flap{
     position:absolute; z-index:3; left:0; right:0; top:0;
     height:calc(var(--h)*0.58);
@@ -62,14 +62,15 @@
     transform:rotateX(0deg) translateZ(1px);
     backface-visibility:hidden;
     transition:transform .9s cubic-bezier(.22,1,.36,1);
-    filter: drop-shadow(0 2px 0 rgba(0,0,0,.16));
+    /* Filo bajo la arista + leve realce */
+    filter: drop-shadow(0 2px 0 rgba(0,0,0,.18)) drop-shadow(0 0 1px rgba(0,0,0,.12));
   }
   .envelope.open .env-flap{
     transform:rotateX(-180deg) translateZ(1px);
-    filter:none;
+    filter:none; /* al abrir, quitamos el filo */
   }
 
-  /* Sello = botón (monograma fino) */
+  /* Sello = botón (mismo color que los nombres) */
   .seal{
     position:absolute; z-index:5;
     top:calc(var(--h)*0.58); left:50%;
@@ -77,12 +78,13 @@
     width:64px; height:64px; border-radius:50%;
     background:
       radial-gradient(60% 60% at 35% 35%, rgba(255,255,255,.55), transparent 60%),
-      radial-gradient(circle at 50% 50%, #d6b48a, #b89064 70%, #a67c52 100%);
+      /* degradado en la gama del brand */
+      linear-gradient(180deg, #3a8f7d, #256c58);
     box-shadow:
-      inset 0 7px 12px rgba(0,0,0,.24),
+      inset 0 7px 12px rgba(0,0,0,.20),
       0 2px 4px rgba(0,0,0,.16),
       0 0 0 2px #ffffffb0,
-      0 8px 18px rgba(166,124,82,.22);
+      0 8px 18px rgba(46,125,107,.25);
     transition: opacity .35s ease, transform .18s ease, box-shadow .18s ease;
     cursor:pointer; display:flex; align-items:center; justify-content:center;
   }
@@ -93,7 +95,7 @@
     content:"L&J";
     font-family:'Cormorant Garamond', serif;
     font-weight:600; font-size:17px; letter-spacing:.3px;
-    color:#fff; text-shadow:0 1px 0 #8f6a45, 0 0 4px rgba(255,255,255,.28);
+    color:#fff; text-shadow:0 1px 0 rgba(0,0,0,.25), 0 0 4px rgba(255,255,255,.28);
   }
 
   /* --- CARTA --- */
