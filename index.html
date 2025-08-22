@@ -9,7 +9,7 @@
 <style>
   :root{
     --bg:#faf8f5; --ink:#243039;
-    --brand:#2e7d6b;      /* verde botones/textos */
+    --brand:#2e7d6b;      /* verde nombres/botón/borde carta */
     --accent:#c7a27b;     /* dorado suave */
     --env-base:#F6F5F2;   /* sobre claro */
     --env-flap:#F6F5F2;   /* solapa mismo color */
@@ -21,7 +21,7 @@
     font-family:'Libre Baskerville', Georgia, serif;
   }
 
-  /* Escena a pantalla completa SIN fondos/gradientes extra */
+  /* Escena a pantalla completa */
   .stage{
     min-height:100svh; display:flex; align-items:center; justify-content:center; padding:24px;
     background: var(--bg);
@@ -43,8 +43,8 @@
   .env-base{
     position:absolute; inset:0; z-index:1;
     border:2px solid var(--env-border);
-    border-radius:0; /* recto */
-    background: var(--env-base); /* SIN textura */
+    border-radius:0;
+    background: var(--env-base);
   }
   .drop{
     position:absolute; left:6%; right:6%; bottom:-10px; height:20px; z-index:1;
@@ -52,29 +52,28 @@
     filter:blur(8px);
   }
 
-  /* Solapa: abre hacia arriba (bisagra arriba), con FILO para separarla */
+  /* Solapa con FILO para separarla visualmente del sobre */
   .env-flap{
     position:absolute; z-index:3; left:0; right:0; top:0;
     height:calc(var(--h)*0.58);
     background: var(--env-flap);
-    clip-path:polygon(0 0,100% 0,50% 100%); /* triángulo */
+    clip-path:polygon(0 0,100% 0,50% 100%);
     transform-origin:50% 0%;
     transform:rotateX(0deg) translateZ(1px);
     backface-visibility:hidden;
     transition:transform .9s cubic-bezier(.22,1,.36,1);
-    /* FILO/sombra bajo la solapa para que se diferencie del sobre */
     filter: drop-shadow(0 2px 0 rgba(0,0,0,.16));
   }
   .envelope.open .env-flap{
     transform:rotateX(-180deg) translateZ(1px);
-    filter:none; /* al abrir, quitamos el filo */
+    filter:none;
   }
 
-  /* Sello en el pico = botón (monograma más fino) */
+  /* Sello = botón (monograma fino) */
   .seal{
     position:absolute; z-index:5;
     top:calc(var(--h)*0.58); left:50%;
-    transform:translate(-50%, -42%); /* justo en el pico */
+    transform:translate(-50%, -42%);
     width:64px; height:64px; border-radius:50%;
     background:
       radial-gradient(60% 60% at 35% 35%, rgba(255,255,255,.55), transparent 60%),
@@ -93,19 +92,17 @@
   .seal::after{
     content:"L&J";
     font-family:'Cormorant Garamond', serif;
-    font-weight:600;             /* más fino que bold */
-    font-size:17px;
-    letter-spacing:.3px;
-    color:#fff;
-    text-shadow:0 1px 0 #8f6a45, 0 0 4px rgba(255,255,255,.28);
+    font-weight:600; font-size:17px; letter-spacing:.3px;
+    color:#fff; text-shadow:0 1px 0 #8f6a45, 0 0 4px rgba(255,255,255,.28);
   }
 
-  /* --- CARTA (todo el contenido) --- */
+  /* --- CARTA --- */
   .letter{
     position:absolute; z-index:5; left:0; right:0; top:0; bottom:0;
-    margin:14px; /* margen interior del sobre */
-    background:#fff; /* SIN textura */
-    border:1px solid #eadbc5; border-radius:12px;
+    margin:14px;
+    background:#fff;
+    border:1px solid var(--brand); /* mismo color que nombres/botón */
+    border-radius:12px;
     display:flex; flex-direction:column; overflow:hidden;
     opacity:0; transform:translateY(0); pointer-events:none;
     transition: transform .9s cubic-bezier(.22,1,.36,1) .05s, opacity .25s ease, box-shadow .25s ease;
@@ -115,7 +112,6 @@
     box-shadow: 0 20px 44px rgba(0,0,0,.20);
     opacity:1; pointer-events:auto;
   }
-  /* Modo lectura centrado y grande */
   .letter.float{
     position:fixed; z-index:6;
     top:50%; left:50%;
@@ -126,49 +122,38 @@
     box-shadow: 0 22px 52px rgba(0,0,0,.22);
   }
 
-  /* --- Tipografías y centrados elegantes --- */
-  .letter-head{ text-align:center; padding:24px 16px 14px; border-bottom:1px dashed #eadbc5}
-  .names{
-    font-family:'Cormorant Garamond',serif; font-weight:500; font-size:40px; letter-spacing:.5px; color:var(--brand);
-  }
-  .note{font-size:13px;color:#66737c}
-
+  /* Tipografías y centrado */
+  .letter-head{ text-align:center; padding:24px 16px 14px; border-bottom:1px dashed #e7e0d6}
+  .names{ font-family:'Cormorant Garamond',serif; font-weight:500; font-size:40px; letter-spacing:.5px; color:var(--brand) }
   .letter-body{ padding:22px 18px; max-height:min(74vh, 760px); overflow:auto; text-align:center; }
   .letter.float .letter-body{ max-height: calc(100% - 150px); }
+  .h1{ font-family:'Cormorant Garamond',serif; font-weight:500; font-size:30px; margin:0 0 10px; text-align:center; letter-spacing:.3px; }
 
-  .h1{
-    font-family:'Cormorant Garamond',serif; font-weight:500; font-size:30px;
-    margin:0 0 10px; text-align:center; letter-spacing:.3px;
-  }
-  .meta{
-    display:flex;flex-wrap:wrap;gap:8px;color:#51606b;margin:8px 0 14px;justify-content:center
-  }
-  .pill{padding:8px 12px;background:transparent;border-radius:999px;border:1px solid #e5e1d6;font-size:14px}
+  .meta{ display:flex; flex-wrap:wrap; gap:8px; color:#51606b; margin:8px 0 14px; justify-content:center }
+  .pill{ padding:10px 14px; background:transparent; border:0; border-radius:999px; font-size:14px; display:inline-flex; align-items:center; justify-content:center; text-align:center }
 
-  .divider{height:1px;background:linear-gradient(90deg,transparent,#e9e3da,transparent);margin:14px 0}
+  .divider{ height:1px; background:linear-gradient(90deg,transparent,#e9e3da,transparent); margin:14px 0 }
 
-  .grid{display:grid;gap:12px}
-  .two{grid-template-columns:1fr 1fr}
-  @media (max-width:720px){ .two{grid-template-columns:1fr} }
+  .grid{ display:grid; gap:12px; justify-items:center }
+  .two{ grid-template-columns:1fr 1fr }
+  @media (max-width:720px){ .two{ grid-template-columns:1fr } }
 
-  .tile{border:1px solid #eee2d4;border-radius:12px;padding:16px;background:#fff; text-align:center}
-  .tile h3{margin:0 0 6px;font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:500}
+  /* Contenedor de ubicaciones sin borde/fondo */
+  .tile{ border:0; border-radius:0; padding:12px 0; background:transparent; text-align:center }
+  .tile h3{ margin:0 0 6px; font-family:'Cormorant Garamond',serif; font-size:22px; font-weight:500 }
 
-  .btn{appearance:none;border:0;border-radius:999px;padding:12px 18px;cursor:pointer;font-weight:600;font-size:15px;
-       transition:filter .18s ease, transform .08s ease}
-  .btn-primary{background:var(--brand);color:#fff;box-shadow:0 6px 16px rgba(46,125,107,.35)}
+  .btn{ appearance:none; border:0; border-radius:999px; padding:12px 18px; cursor:pointer; font-weight:600; font-size:15px; transition:filter .18s ease, transform .08s ease }
+  .btn-primary{ background:var(--brand); color:#fff; box-shadow:0 6px 16px rgba(46,125,107,.35) }
   .btn-primary:hover{ filter:brightness(1.05) }
-  .btn:active{transform:translateY(1px)}
+  .btn:active{ transform:translateY(1px) }
   a.pill{ text-decoration:none; color:inherit }
 
-  /* Oculta el cascarón del sobre cuando se abre (queda solo la carta) */
+  /* Ocultar cascarón al abrir */
   .shell-hidden .env-base,
   .shell-hidden .env-flap,
   .shell-hidden .drop{
-    opacity:0;
-    transform: translateY(-8px) scale(0.98);
-    pointer-events:none;
-    transition: opacity .35s ease, transform .45s ease;
+    opacity:0; transform: translateY(-8px) scale(0.98);
+    pointer-events:none; transition: opacity .35s ease, transform .45s ease;
   }
   .shell-hidden{ cursor: default; }
 
@@ -188,7 +173,7 @@
     <!-- Sello en el pico = botón -->
     <div class="seal" id="seal" aria-label="Abrir invitación" role="button" tabindex="0"></div>
 
-    <!-- Carta con todo el contenido (inicialmente oculta) -->
+    <!-- Carta (inicialmente oculta) -->
     <div class="letter" id="letter" aria-hidden="true">
       <div class="letter-head">
         <div class="names">Laura & Javier</div>
@@ -206,12 +191,8 @@
         <div class="tile" style="margin-top:12px">
           <h3>Ubicaciones</h3>
           <div class="grid two">
-            <a class="pill" href="https://maps.google.com/?q=Ermita%20de%20Nuestra%20Se%C3%B1ora%20de%20La%20Lanzada" target="_blank" rel="noopener">
-              📍 Ceremonia · Ermita de Nuestra Señora de La Lanzada
-            </a>
-            <a class="pill" href="https://maps.google.com/?q=Lagar%20de%20Pintos" target="_blank" rel="noopener">
-              📍 Celebración · Bodegas Lagar de Pintos
-            </a>
+            <a class="pill" href="https://maps.google.com/?q=Ermita%20de%20Nuestra%20Se%C3%B1ora%20de%20La%20Lanzada" target="_blank" rel="noopener">📍 Ceremonia · Ermita de Nuestra Señora de La Lanzada</a>
+            <a class="pill" href="https://maps.google.com/?q=Lagar%20de%20Pintos" target="_blank" rel="noopener">📍 Celebración · Bodegas Lagar de Pintos</a>
           </div>
         </div>
 
@@ -255,14 +236,14 @@
   window.addEventListener('resize', resize); resize();
 
   function burstConfetti(){
-    const colors = ['#2e7d6b','#ba8a55','#c7a27b','#e8d8c7','#ffffff']; // paleta refinada
+    const colors = ['#2e7d6b','#ba8a55','#c7a27b','#e8d8c7','#ffffff'];
     pieces = [];
     for(let i=0;i<160;i++){
-      const type = Math.random(); // tipo de pieza
+      const type = Math.random();
       pieces.push({
         x: W/2, y: H/2,
         r: Math.random()*6+2,
-        w: Math.random()*8+4, h: Math.random()*3+2, // rectángulos
+        w: Math.random()*8+4, h: Math.random()*3+2,
         rot: Math.random()*Math.PI,
         c: colors[Math.floor(Math.random()*colors.length)],
         vx: (Math.random()-0.5)*7,
