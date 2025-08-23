@@ -1,0 +1,335 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>SAVE THE DATE – Laura & Javier · 22 agosto 2026</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600&family=Libre+Baskerville:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#faf8f5; --ink:#243039;
+    --brand:#2e7d6b;      /* verde nombres/botón/borde carta */
+    --accent:#c7a27b;     /* dorado confeti */
+    --env-base:#F6F5F2;   /* sobre claro */
+    --env-flap:#E9F4EF;   /* solapa verde pastel muy clara */
+    --env-border: var(--env-flap); /* borde del sobre = solapa */
+  }
+  *{box-sizing:border-box}
+  html,body{
+    height:100%;margin:0;background:var(--bg);color:var(--ink);
+    font-family:'Libre Baskerville', Georgia, serif;
+    overflow-x:hidden; /* evita desplazamiento lateral en móvil */
+  }
+
+  .stage{
+    min-height:100svh; display:flex; align-items:center; justify-content:center; padding:24px;
+    background: var(--bg);
+    perspective:1600px;
+  }
+
+  /* --- SOBRE (móvil-first, compacto) --- */
+  .envelope{
+    --w: clamp(300px, 92vw, 620px);
+    --h: calc(var(--w) * 0.62);
+    width:var(--w); height:var(--h);
+    position:relative; transform-style:preserve-3d;
+    filter: drop-shadow(0 14px 32px rgba(0,0,0,.18));
+    overflow:visible; cursor:pointer;
+    transition: transform .25s ease;
+  }
+  .envelope:hover{ transform: translateY(-2px) }
+
+  .env-base{
+    position:absolute; inset:0; z-index:1;
+    border:2px solid var(--env-border); /* mismo color que solapa */
+    border-radius:0;
+    background: var(--env-base);
+  }
+  .drop{
+    position:absolute; left:6%; right:6%; bottom:-10px; height:20px; z-index:1;
+    background:radial-gradient(60% 100% at 50% 0, rgba(0,0,0,.16), transparent 72%);
+    filter:blur(8px);
+  }
+
+  /* Solapa con filo para diferenciarla del sobre */
+  .env-flap{
+    position:absolute; z-index:3; left:0; right:0; top:0;
+    height:calc(var(--h)*0.58);
+    background: var(--env-flap);
+    clip-path:polygon(0 0,100% 0,50% 100%);
+    transform-origin:50% 0%;
+    transform:rotateX(0deg) translateZ(1px);
+    backface-visibility:hidden;
+    transition:transform .9s cubic-bezier(.22,1,.36,1);
+    filter: drop-shadow(0 2px 0 rgba(0,0,0,.18)) drop-shadow(0 0 1px rgba(0,0,0,.12));
+  }
+  .envelope.open .env-flap{
+    transform:rotateX(-180deg) translateZ(1px);
+    filter:none;
+  }
+
+  /* Sello = botón (mismo color que los nombres) */
+  .seal{
+    position:absolute; z-index:5;
+    top:calc(var(--h)*0.58); left:50%;
+    transform:translate(-50%, -42%);
+    width:60px; height:60px; border-radius:50%;
+    background:
+      radial-gradient(60% 60% at 35% 35%, rgba(255,255,255,.55), transparent 60%),
+      linear-gradient(180deg, #3a8f7d, #256c58); /* gama brand */
+    box-shadow:
+      inset 0 7px 12px rgba(0,0,0,.20),
+      0 2px 4px rgba(0,0,0,.16),
+      0 0 0 2px #ffffffb0,
+      0 8px 18px rgba(46,125,107,.25);
+    transition: opacity .35s ease, transform .18s ease, box-shadow .18s ease;
+    cursor:pointer; display:flex; align-items:center; justify-content:center;
+  }
+  .seal:hover{ transform:translate(-50%,-42%) scale(1.04) }
+  .seal:active{ transform:translate(-50%,-42%) scale(.97) }
+  .envelope.open .seal{ opacity:0; pointer-events:none; transform:translate(-50%,-60%) scale(.94) }
+  .seal::after{
+    content:"L&J";
+    font-family:'Cormorant Garamond', serif;
+    font-weight:600; font-size:16px; letter-spacing:.3px;
+    color:#fff; text-shadow:0 1px 0 rgba(0,0,0,.25), 0 0 4px rgba(255,255,255,.28);
+  }
+
+  /* --- CARTA (borde recto y color verde brand) --- */
+  .letter{
+    position:absolute; z-index:5; left:0; right:0; top:0; bottom:0;
+    margin:14px;
+    background:#fff;
+    border:1px solid var(--brand); /* verde (no beige) */
+    border-radius:0;               /* recto */
+    display:flex; flex-direction:column; overflow:hidden;
+    opacity:0; transform:translateY(0); pointer-events:none;
+    transition: transform .9s cubic-bezier(.22,1,.36,1) .05s, opacity .25s ease, box-shadow .25s ease;
+  }
+  .envelope.open .letter{
+    transform: translateY(calc(-1 * var(--h) * 0.95));
+    box-shadow: 0 20px 44px rgba(0,0,0,.20);
+    opacity:1; pointer-events:auto;
+  }
+  .letter.float{
+    position:fixed; z-index:6;
+    top:50%; left:50%; right:auto; bottom:auto; /* resetea para centrar siempre */
+    transform: translate(-50%, -50%) !important;
+    width:min(560px, 92vw);
+    height:min(82vh, 680px); /* escritorio/tablet: tarjeta amplia */
+    border-radius:0;
+    box-shadow: 0 22px 52px rgba(0,0,0,.22);
+    margin:0; /* evita herencias que desplacen */
+  }
+
+  /* Tipografías y centrado */
+  .letter-head{ text-align:center; padding:24px 16px 14px; border-bottom:1px dashed var(--env-flap) }
+  .names{ font-family:'Cormorant Garamond',serif; font-weight:500; font-size:40px; letter-spacing:.5px; color:var(--brand) }
+  .letter-body{ padding:22px 18px; max-height:min(74vh, 640px); overflow:auto; text-align:center; }
+  .letter.float .letter-body{ max-height: calc(100% - 150px); }
+  .h1{ font-family:'Cormorant Garamond',serif; font-weight:500; font-size:30px; margin:0 0 10px; text-align:center; letter-spacing:.3px; }
+
+  .meta{ display:flex; flex-wrap:wrap; gap:8px; color:#51606b; margin:8px 0 8px; justify-content:center }
+  .pill{ padding:10px 14px; background:transparent; border:0; border-radius:999px; font-size:14px; display:inline-flex; align-items:center; justify-content:center; text-align:center }
+
+   /* Divisor en verde pastel (no beige) */
+  .divider{ height:1px; background:linear-gradient(90deg,transparent,var(--env-flap),transparent); margin:14px 0 }
+
+  /* Cuenta atrás */
+  .countdown{
+    font-variant-numeric: tabular-nums;
+    font-weight:700;
+    font-size:20px;
+    color:var(--brand);
+    letter-spacing:.5px;
+    margin:6px 0 12px;
+  }
+  /* Divisor en verde pastel (no beige) */
+  .divider{ height:1px; background:linear-gradient(90deg,transparent,var(--env-flap),transparent); margin:14px 0 }
+
+  .grid{ display:grid; gap:12px; justify-items:center }
+  .two{ grid-template-columns:1fr 1fr }
+  @media (max-width:720px){ .two{ grid-template-columns:1fr } }
+
+  .tile{ border:0; border-radius:0; padding:12px 0; background:transparent; text-align:center }
+  .tile h3{ margin:0 0 6px; font-family:'Cormorant Garamond',serif; font-size:22px; font-weight:500 }
+
+  a.pill{ text-decoration:none; color:inherit }
+
+  /* Ocultar cascarón al abrir */
+  .shell-hidden .env-base,
+  .shell-hidden .env-flap,
+  .shell-hidden .drop{
+    opacity:0; transform: translateY(-8px) scale(0.98);
+    pointer-events:none; transition: opacity .35s ease, transform .45s ease;
+  }
+  .shell-hidden{ cursor: default; }
+
+  /* ====== Móvil: la carta es una TARJETA (no pantalla completa) ====== */
+  @media (max-width: 480px){
+    .envelope{ --w: min(92vw, 380px); }
+    .seal{ width:56px; height:56px; }
+
+    /* La carta se adapta al contenido y deja aire alrededor */
+    .letter.float{
+      left:50%; right:auto; bottom:auto;
+      width:92vw;
+      height:auto;           /* <--- altura automática */
+      max-height:86vh;       /* no excede la pantalla */
+      transform: translate(-50%, -50%) !important;
+      margin:0;
+    }
+    /* El cuerpo scrollea solo si hace falta, calculando un tope cómodo */
+    .letter.float .letter-body{
+      max-height: calc(86vh - 120px); /* 120px ≈ cabecera + márgenes */
+      overflow:auto;
+      padding:18px;
+    }
+
+    .names{ font-size:34px; }
+    .h1{ font-size:26px; }
+    .pill{ font-size:13px; padding:8px 12px; }
+    .countdown{ font-size:18px; }
+  }
+
+  canvas#confetti{position:fixed;inset:0;pointer-events:none;z-index:9999}
+</style>
+</head>
+<body>
+<canvas id="confetti"></canvas>
+
+<div class="stage">
+  <div class="envelope" id="envelope" aria-label="Abrir invitación" role="button" tabindex="0">
+    <div class="env-base"></div>
+    <div class="drop"></div>
+    <div class="env-flap"></div>
+
+    <!-- Sello en el pico = botón -->
+    <div class="seal" id="seal" aria-label="Abrir invitación" role="button" tabindex="0"></div>
+
+    <!-- Carta (inicialmente oculta) -->
+    <div class="letter" id="letter" aria-hidden="true">
+      <div class="letter-head">
+        <div class="names">Laura & Javier</div>
+      </div>
+
+      <div class="letter-body">
+        <h2 class="h1">SAVE THE DATE</h2>
+
+        <div class="meta">
+          <div class="pill">Sábado, 22 de agosto de 2026 · 13:00</div>
+        </div>
+        <div class="meta">
+          <div class="pill"> · Pontevedra ·</div>
+        </div>
+
+        <!-- CUENTA ATRÁS -->
+        <div id="countdown" class="countdown">—:—:—</div>
+
+        <div class="divider"></div>
+
+        <!-- más espacio entre cuenta atrás y ubicaciones -->
+        <!-- CUENTA ATRÁS 
+        <div class="tile" style="margin-top:24px">
+          <h3>Ubicaciones</h3>
+          <div class="grid two">
+            <a class="pill" href="https://maps.google.com/?q=Ermita%20de%20Nuestra%20Se%C3%B1ora%20de%20La%20Lanzada" target="_blank" rel="noopener">📍 Ceremonia · Ermita de Nuestra Señora de La Lanzada</a>
+            <a class="pill" href="https://maps.google.com/?q=Lagar%20de%20Pintos" target="_blank" rel="noopener">📍 Celebración · Bodegas Lagar de Pintos</a>
+          </div>
+        </div> -->
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const envelope = document.getElementById('envelope');
+  const letter   = document.getElementById('letter');
+  const seal     = document.getElementById('seal');
+
+  function openInvite(){
+    if(envelope.classList.contains('open')) return;
+    envelope.classList.add('open');
+    letter.removeAttribute('aria-hidden');
+    burstConfetti();
+    setTimeout(()=>{
+      letter.classList.add('float');          // centrada (tarjeta)
+      envelope.classList.add('shell-hidden'); // oculta el sobre
+    }, 950);
+  }
+
+  // El SELLO del pico es el botón
+  seal.addEventListener('click', (e)=>{ e.stopPropagation(); openInvite(); });
+  seal.addEventListener('keypress', (e)=>{ if(e.key==='Enter'||e.key===' '){ e.stopPropagation(); openInvite(); }});
+
+  // Accesibilidad: click en el sobre
+  envelope.addEventListener('click', openInvite);
+  envelope.addEventListener('keypress', e=>{ if(e.key==='Enter'||e.key===' '){ openInvite(); }});
+
+  /* ====== Cuenta atrás ====== */
+  const weddingDate = new Date(2026, 7, 22, 13, 0, 0); // 22 agosto 2026 13:00
+  function tick(){
+    const el = document.getElementById('countdown');
+    if(!el) return;
+    const now = new Date();
+    let diff = weddingDate - now;
+    if(diff <= 0){ el.textContent = '¡Es hoy!'; return; }
+    const d = Math.floor(diff / (1000*60*60*24));
+    const h = Math.floor((diff / (1000*60*60)) % 24).toString().padStart(2,'0');
+    const m = Math.floor((diff / (1000*60)) % 60).toString().padStart(2,'0');
+    const s = Math.floor((diff / 1000) % 60).toString().padStart(2,'0');
+    el.textContent = `${d} días · ${h}:${m}:${s}`;
+    setTimeout(tick, 1000);
+  }
+  tick();
+
+  /* ===== Confeti premium ===== */
+  const canvas = document.getElementById('confetti');
+  const ctx = canvas.getContext('2d');
+  let W,H,pieces=[],animating=false;
+  function resize(){ W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight; }
+  window.addEventListener('resize', resize); resize();
+
+  function burstConfetti(){
+    const colors = ['#2e7d6b','#ba8a55','#c7a27b','#e8d8c7','#ffffff'];
+    pieces = [];
+    for(let i=0;i<160;i++){
+      const type = Math.random();
+      pieces.push({
+        x: W/2, y: H/2,
+        r: Math.random()*6+2,
+        w: Math.random()*8+4, h: Math.random()*3+2,
+        rot: Math.random()*Math.PI,
+        c: colors[Math.floor(Math.random()*colors.length)],
+        vx: (Math.random()-0.5)*7,
+        vy: (Math.random()-1.1)*8,
+        g: 0.22+Math.random()*0.09,
+        a: 1,
+        t: type < 0.5 ? 'circle' : 'rect'
+      });
+    }
+    if(!animating){ animating = true; requestAnimationFrame(loop); }
+    setTimeout(()=>{ pieces = []; }, 2100);
+  }
+  function loop(){
+    ctx.clearRect(0,0,W,H);
+    for(const p of pieces){
+      p.vy += p.g; p.x += p.vx; p.y += p.vy; p.a -= 0.012; p.rot += 0.05;
+      ctx.globalAlpha = Math.max(p.a,0);
+      ctx.fillStyle = p.c;
+      if(p.t === 'rect'){
+        ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.rot);
+        ctx.fillRect(-p.w/2, -p.h/2, p.w, p.h);
+        ctx.restore();
+      }else{
+        ctx.beginPath(); ctx.arc(p.x,p.y,p.r,0,Math.PI*2); ctx.fill();
+      }
+    }
+    ctx.globalAlpha = 1;
+    pieces = pieces.filter(p=>p.a>0 && p.y<H+50);
+    if(pieces.length){ requestAnimationFrame(loop); }
+    else { animating=false; }
+  }
+</script>
+</body>
+</html>
